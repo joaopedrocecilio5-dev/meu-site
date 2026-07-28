@@ -1,242 +1,491 @@
-
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>Painel Financeiro de Bolsas</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans)}
-.pb-shell{background:#f3f2f1;min-height:600px;border-radius:var(--border-radius-lg);overflow:hidden}
-.pb-sidebar{background:#252423;width:56px;position:absolute;top:0;left:0;bottom:0;border-radius:var(--border-radius-lg) 0 0 var(--border-radius-lg);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px}
-.pb-nav-icon{width:40px;height:40px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#a19f9d;font-size:18px;transition:background .15s}
-.pb-nav-icon:hover{background:#3b3a38;color:#fff}
-.pb-nav-icon.active{background:#0078d4;color:#fff}
-.pb-main{margin-left:56px;display:flex;flex-direction:column}
-.pb-topbar{background:#fff;border-bottom:1px solid #e1dfdd;padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
-.pb-report-title{font-size:14px;font-weight:500;color:#323130}
-.pb-tabs{display:flex;gap:0}
-.pb-tab{padding:8px 16px;font-size:12px;cursor:pointer;color:#605e5c;border-bottom:2px solid transparent;transition:all .15s}
-.pb-tab.active{color:#0078d4;border-bottom-color:#0078d4;font-weight:500}
-.pb-tab:hover{color:#0078d4;background:#f3f2f1}
-.pb-filters{background:#faf9f8;border-bottom:1px solid #e1dfdd;padding:6px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.pb-filter-label{font-size:11px;color:#605e5c;font-weight:500}
-.pb-filter-pill{font-size:11px;padding:3px 10px;border:1px solid #c8c6c4;border-radius:12px;cursor:pointer;color:#323130;background:#fff;transition:all .15s}
-.pb-filter-pill.active{background:#0078d4;color:#fff;border-color:#0078d4}
-.pb-canvas{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
-.kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.kpi-card{background:#fff;border:1px solid #e1dfdd;border-radius:4px;padding:12px 14px;border-top:3px solid #0078d4;position:relative}
-.kpi-card.green{border-top-color:#107c10}
-.kpi-card.orange{border-top-color:#d83b01}
-.kpi-card.purple{border-top-color:#5c2d91}
-.kpi-label{font-size:10px;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;font-weight:500;margin-bottom:4px}
-.kpi-value{font-size:22px;font-weight:700;color:#252423;line-height:1}
-.kpi-sub{font-size:10px;color:#107c10;margin-top:3px}
-.kpi-sub.neg{color:#d83b01}
-.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:10px}
-.chart-card{background:#fff;border:1px solid #e1dfdd;border-radius:4px;padding:12px}
-.chart-title{font-size:11px;font-weight:600;color:#323130;margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px}
-.chart-sub{font-size:10px;color:#605e5c;margin-bottom:8px}
-.charts-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.page-view{display:none}
-.page-view.active{display:block}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
+
+/* sidebar */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:56px;background:#252423;display:flex;flex-direction:column;align-items:center;padding:16px 0;gap:6px;z-index:100}
+.nav-btn{width:40px;height:40px;border-radius:6px;border:none;background:transparent;color:#a19f9d;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.nav-btn:hover{background:#3b3a38;color:#fff}
+.nav-btn.active{background:#0078d4;color:#fff}
+.nav-btn svg{width:20px;height:20px;fill:currentColor}
+
+/* layout */
+.main{margin-left:56px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e1dfdd;padding:10px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-title{font-size:15px;font-weight:600;color:#252423}
+.badge{font-size:11px;background:#dff6dd;color:#107c10;padding:3px 10px;border-radius:10px}
+
+/* tabs */
+.tabbar{background:#faf9f8;border-bottom:1px solid #e1dfdd;display:flex;padding:0 16px}
+.tab{padding:10px 16px;font-size:13px;cursor:pointer;color:#605e5c;border-bottom:3px solid transparent;transition:all .15s;white-space:nowrap}
+.tab:hover{color:#0078d4}
+.tab.active{color:#0078d4;border-bottom-color:#0078d4;font-weight:500}
+
+/* canvas */
+.canvas{padding:16px;display:none}
+.canvas.active{display:block}
+
+/* kpi grid */
+.kpi-grid{display:grid;gap:12px;margin-bottom:16px}
+.kpi-grid-4{grid-template-columns:repeat(4,1fr)}
+.kpi-grid-2{grid-template-columns:repeat(2,1fr)}
+.kpi-grid-3{grid-template-columns:repeat(3,1fr)}
+
+.kpi{background:#fff;border-radius:4px;border:1px solid #e1dfdd;border-top:4px solid #0078d4;padding:14px 16px}
+.kpi.green {border-top-color:#107c10}
+.kpi.orange{border-top-color:#e07b00}
+.kpi.red   {border-top-color:#c4262e}
+.kpi.purple{border-top-color:#5c2d91}
+.kpi.teal  {border-top-color:#008080}
+.kpi-label{font-size:11px;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-weight:500}
+.kpi-value{font-size:22px;font-weight:700;color:#252423;line-height:1.1}
+.kpi-sub{font-size:11px;color:#605e5c;margin-top:4px}
+.kpi-sub.pos{color:#107c10}
+.kpi-sub.neg{color:#c4262e}
+
+/* charts */
+.chart-row{display:grid;gap:12px;margin-bottom:12px}
+.chart-row-21{grid-template-columns:2fr 1fr}
+.chart-row-11{grid-template-columns:1fr 1fr}
+.chart-row-1{grid-template-columns:1fr}
+
+.chart-box{background:#fff;border:1px solid #e1dfdd;border-radius:4px;padding:14px}
+.chart-title{font-size:12px;font-weight:600;color:#252423;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
+.chart-sub{font-size:11px;color:#605e5c;margin-bottom:12px}
+.chart-wrap{position:relative;width:100%}
+
+/* section title */
+.section-label{font-size:11px;font-weight:600;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e1dfdd}
+
+/* table */
+.data-table{width:100%;border-collapse:collapse;font-size:12px}
+.data-table th{background:#f3f2f1;padding:8px 10px;text-align:left;font-weight:600;color:#605e5c;font-size:11px;text-transform:uppercase;border-bottom:2px solid #e1dfdd}
+.data-table td{padding:8px 10px;border-bottom:1px solid #f3f2f1;color:#252423}
+.data-table tr:hover td{background:#f8f9ff}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500}
+.pill-green{background:#dff6dd;color:#107c10}
+.pill-orange{background:#fff4ce;color:#a37200}
+.pill-red{background:#fde7e9;color:#c4262e}
+.pill-gray{background:#f3f2f1;color:#605e5c}
 </style>
+</head>
+<body>
 
-<div class="pb-shell" style="position:relative;min-height:580px">
-  <div class="pb-sidebar">
-    <div class="pb-nav-icon active" onclick="setPage(0)" title="Início"><i class="ti ti-layout-dashboard" aria-hidden="true"></i></div>
-    <div class="pb-nav-icon" onclick="setPage(1)" title="Idiomas"><i class="ti ti-language" aria-hidden="true"></i></div>
-    <div class="pb-nav-icon" onclick="setPage(2)" title="Pós-Graduação"><i class="ti ti-school" aria-hidden="true"></i></div>
-    <div class="pb-nav-icon" onclick="setPage(3)" title="Graduação"><i class="ti ti-certificate" aria-hidden="true"></i></div>
-  </div>
-  <div class="pb-main">
-    <div class="pb-topbar">
-      <span class="pb-report-title" id="report-title">Relatório de Bolsistas — Visão Geral</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <span style="font-size:11px;color:#605e5c">Dados anonimizados</span>
-        <span style="font-size:11px;background:#dff6dd;color:#107c10;padding:2px 8px;border-radius:10px">Atualizado jun/2026</span>
-      </div>
-    </div>
-
-    <div class="pb-filters">
-      <span class="pb-filter-label"><i class="ti ti-filter" style="font-size:12px;vertical-align:-1px" aria-hidden="true"></i> Filtros:</span>
-      <button class="pb-filter-pill active" onclick="toggleFilter(this,'all')">Todos</button>
-      <button class="pb-filter-pill" onclick="toggleFilter(this,'ativa')">Ativa</button>
-      <button class="pb-filter-pill" onclick="toggleFilter(this,'previsto')">Previsto</button>
-      <span style="margin-left:auto;font-size:11px;color:#605e5c">2015–2026</span>
-    </div>
-
-    <div class="pb-canvas">
-      <div id="tabs" style="display:flex;border-bottom:1px solid #e1dfdd;margin-bottom:2px">
-        <div class="pb-tab active" onclick="setPage(0)">Visão Geral</div>
-        <div class="pb-tab" onclick="setPage(1)">Idiomas</div>
-        <div class="pb-tab" onclick="setPage(2)">Pós-Graduação</div>
-        <div class="pb-tab" onclick="setPage(3)">Graduação</div>
-      </div>
-
-      <!-- PAGE 0: Visão Geral -->
-      <div class="page-view active" id="page-0">
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Total Pago — Idiomas</div><div class="kpi-value" style="font-size:18px">R$ 722.522</div><div class="kpi-sub">2015 – 2024 · 10 exercícios</div></div>
-          <div class="kpi-card green"><div class="kpi-label">Bolsistas Idiomas</div><div class="kpi-value">199</div><div class="kpi-sub">262 processos registrados</div></div>
-          <div class="kpi-card orange"><div class="kpi-label">Previsto 2026 — POS</div><div class="kpi-value" style="font-size:18px">R$ 757.619</div><div class="kpi-sub">27 bolsistas ativos</div></div>
-          <div class="kpi-card purple"><div class="kpi-label">Classificados 2025</div><div class="kpi-value">55</div><div class="kpi-sub">R$ 176.478 compromisso</div></div>
-        </div>
-        <div class="charts-row">
-          <div class="chart-card">
-            <div class="chart-title">Evolução do reembolso de idiomas por exercício</div>
-            <div class="chart-sub">Valor pago em R$ — 2015 a 2024</div>
-            <div style="position:relative;width:100%;height:200px"><canvas id="c0a" role="img" aria-label="Gráfico de barras do valor pago em idiomas por exercício de 2015 a 2024">Maior valor em 2017 (R$167.339). Queda em 2020 por COVID.</canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Composição do orçamento 2026</div>
-            <div class="chart-sub">Distribuição por modalidade</div>
-            <div style="position:relative;width:100%;height:200px"><canvas id="c0b" role="img" aria-label="Gráfico de rosca com distribuição do orçamento 2026 por modalidade">Pós-Grad representa 99% do previsto 2026.</canvas></div>
-          </div>
-        </div>
-        <div class="charts-row2">
-          <div class="chart-card">
-            <div class="chart-title">Bolsistas por modalidade</div>
-            <div class="chart-sub">Distribuição atual</div>
-            <div style="position:relative;width:100%;height:160px"><canvas id="c0c" role="img" aria-label="Gráfico de barras horizontais com quantidade de bolsistas por modalidade">Idiomas 199, Pós-Grad 27, Graduação 12.</canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Taxa de crescimento — Idiomas</div>
-            <div class="chart-sub">Variação anual do valor pago</div>
-            <div style="position:relative;width:100%;height:160px"><canvas id="c0d" role="img" aria-label="Gráfico de linha com variação anual do valor de idiomas">Alta em 2016 e 2017, queda em 2020.</canvas></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE 1: Idiomas -->
-      <div class="page-view" id="page-1">
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Total pago</div><div class="kpi-value" style="font-size:18px">R$ 722.522</div><div class="kpi-sub">2015–2024</div></div>
-          <div class="kpi-card green"><div class="kpi-label">Bolsistas únicos</div><div class="kpi-value">199</div><div class="kpi-sub">262 processos</div></div>
-          <div class="kpi-card orange"><div class="kpi-label">Pico — 2017</div><div class="kpi-value" style="font-size:18px">R$ 167.339</div><div class="kpi-sub neg">-79% em 2020 (COVID)</div></div>
-          <div class="kpi-card purple"><div class="kpi-label">Taxa de reembolso</div><div class="kpi-value">50%</div><div class="kpi-sub">Uniforme — todos os casos</div></div>
-        </div>
-        <div class="chart-card" style="margin-bottom:10px">
-          <div class="chart-title">Valor pago por exercício (R$)</div>
-          <div class="chart-sub">Barras representam o total anual desembolsado em reembolso de idiomas</div>
-          <div style="position:relative;width:100%;height:230px"><canvas id="c1a" role="img" aria-label="Gráfico de barras com valor pago em idiomas por ano de 2015 a 2024">Pico de R$167mil em 2017, queda para R$35mil em 2020.</canvas></div>
-        </div>
-        <div class="charts-row2">
-          <div class="chart-card">
-            <div class="chart-title">Top 5 maiores beneficiários</div>
-            <div class="chart-sub">Valor total acumulado por processo</div>
-            <div style="position:relative;width:100%;height:180px"><canvas id="c1b" role="img" aria-label="Top 5 beneficiários de idiomas por valor acumulado">Maior: Gilmar P. da Silva com R$11.999.</canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Classificação 2025 — distribuição de notas</div>
-            <div class="chart-sub">55 candidatos aprovados</div>
-            <div style="position:relative;width:100%;height:180px"><canvas id="c1c" role="img" aria-label="Distribuição de notas dos candidatos classificados em 2025">12 candidatos com nota 15, 1 com nota 80.</canvas></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE 2: Pós-Graduação -->
-      <div class="page-view" id="page-2">
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Bolsistas ativos</div><div class="kpi-value">23</div><div class="kpi-sub">Status: ATIVA</div></div>
-          <div class="kpi-card green"><div class="kpi-label">Previsto 2026</div><div class="kpi-value" style="font-size:18px">R$ 757.619</div><div class="kpi-sub">Total acumulado anual</div></div>
-          <div class="kpi-card orange"><div class="kpi-label">Maior bolsista</div><div class="kpi-value" style="font-size:18px">R$ 53.868</div><div class="kpi-sub">Diego T. / Roberta S.</div></div>
-          <div class="kpi-card purple"><div class="kpi-label">A arquivar/solicitada</div><div class="kpi-value">3</div><div class="kpi-sub">De 29 registros totais</div></div>
-        </div>
-        <div class="chart-card" style="margin-bottom:10px">
-          <div class="chart-title">Acumulado previsto 2026 por bolsista (R$)</div>
-          <div class="chart-sub">Valor anual previsto — maiores 10 bolsistas</div>
-          <div style="position:relative;width:100%;height:240px"><canvas id="c2a" role="img" aria-label="Top 10 bolsistas de pós-graduação por valor previsto em 2026">Dois bolsistas lideram com R$53.868 cada.</canvas></div>
-        </div>
-        <div class="charts-row2">
-          <div class="chart-card">
-            <div class="chart-title">Distribuição de status</div>
-            <div class="chart-sub">Situação atual dos processos</div>
-            <div style="position:relative;width:100%;height:160px"><canvas id="c2b" role="img" aria-label="Gráfico de rosca com distribuição de status dos bolsistas de pós-graduação">23 Ativa, 2 A Arquivar, 1 Solicitada.</canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Concentração de recursos — top 5</div>
-            <div class="chart-sub">% do total previsto 2026</div>
-            <div style="position:relative;width:100%;height:160px"><canvas id="c2c" role="img" aria-label="Gráfico de barras mostrando concentração de recursos nos top 5 bolsistas de pós-grad">Top 2 concentram 14% do total.</canvas></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PAGE 3: Graduação -->
-      <div class="page-view" id="page-3">
-        <div class="kpi-row">
-          <div class="kpi-card"><div class="kpi-label">Bolsistas ativos</div><div class="kpi-value">12</div><div class="kpi-sub">Todos com status PREVISTO</div></div>
-          <div class="kpi-card green"><div class="kpi-label">Previsto 2026</div><div class="kpi-value" style="font-size:18px">R$ 7.334</div><div class="kpi-sub">Acumulado anual</div></div>
-          <div class="kpi-card orange"><div class="kpi-label">Vigência máx.</div><div class="kpi-value">2027</div><div class="kpi-sub">Processos de 2023 e 2026</div></div>
-          <div class="kpi-card purple"><div class="kpi-label">vs POS previsto</div><div class="kpi-value">1%</div><div class="kpi-sub">da carteira 2026 total</div></div>
-        </div>
-        <div class="charts-row2" style="margin-bottom:10px">
-          <div class="chart-card">
-            <div class="chart-title">Valor mensal estimado por bolsista</div>
-            <div class="chart-sub">Graduação — 2026</div>
-            <div style="position:relative;width:100%;height:220px"><canvas id="c3a" role="img" aria-label="Gráfico de barras horizontais com valor mensal por bolsista de graduação">Valores entre R$490 e R$1.321 mensais.</canvas></div>
-          </div>
-          <div class="chart-card">
-            <div class="chart-title">Comparativo Grad vs Pós-Grad</div>
-            <div class="chart-sub">Volume financeiro 2026 (R$)</div>
-            <div style="position:relative;width:100%;height:220px"><canvas id="c3b" role="img" aria-label="Gráfico comparando o volume financeiro de graduação versus pós-graduação em 2026">Pós-Grad representa 99% do total previsto 2026.</canvas></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <!-- Visão Geral -->
+  <button class="nav-btn active" onclick="setPage(0,this)" title="Visão Geral">
+    <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm0 10h8v8H3zm10-10h8v8h-8zm0 10h8v8h-8z"/></svg>
+  </button>
+  <!-- POS -->
+  <button class="nav-btn" onclick="setPage(1,this)" title="Pós-Graduação">
+    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+  </button>
+  <!-- GRAD -->
+  <button class="nav-btn" onclick="setPage(2,this)" title="Graduação">
+    <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
+  </button>
+  <!-- Idiomas -->
+  <button class="nav-btn" onclick="setPage(3,this)" title="Idiomas">
+    <svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
+  </button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>
-var chartsBuilt = {};
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title">Painel Financeiro de Bolsas</span>
+    <span class="badge">Dados 2026</span>
+  </div>
 
-var clrs = {
-  blue:'#0078d4', green:'#107c10', orange:'#d83b01', purple:'#5c2d91',
-  blueA:'rgba(0,120,212,0.15)', greenA:'rgba(16,124,16,0.15)',
-  orangeA:'rgba(216,59,1,0.15)', purpleA:'rgba(92,45,145,0.15)',
-  gray:'#605e5c', grayA:'rgba(96,94,92,0.12)'
+  <div class="tabbar">
+    <div class="tab active" onclick="setPage(0,null)">Visão Geral</div>
+    <div class="tab" onclick="setPage(1,null)">Pós-Graduação</div>
+    <div class="tab" onclick="setPage(2,null)">Graduação</div>
+    <div class="tab" onclick="setPage(3,null)">Idiomas</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PÁGINA 0 — VISÃO GERAL CONSOLIDADA
+  ═══════════════════════════════════════ -->
+  <div class="canvas active" id="page-0">
+
+    <div class="section-label">Consolidado 2026 — todas as modalidades</div>
+
+    <div class="kpi-grid kpi-grid-3">
+      <div class="kpi">
+        <div class="kpi-label">Valor Total Previsto</div>
+        <div class="kpi-value" id="kpi-total-prev"></div>
+        <div class="kpi-sub">POS + GRAD + Idiomas</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Já Comprometido (bolsas ativas)</div>
+        <div class="kpi-value" id="kpi-comprometido"></div>
+        <div class="kpi-sub pos" id="kpi-comprometido-pct"></div>
+      </div>
+      <div class="kpi orange">
+        <div class="kpi-label">Reservado — novas solicitações</div>
+        <div class="kpi-value" id="kpi-reservado"></div>
+        <div class="kpi-sub">Bolsistas em status SOLICITADA</div>
+      </div>
+      <div class="kpi teal">
+        <div class="kpi-label">Valor Disponível</div>
+        <div class="kpi-value" id="kpi-disponivel"></div>
+        <div class="kpi-sub">Previsto − Comprometido − Reservado</div>
+      </div>
+    </div>
+
+    <div class="chart-row chart-row-21">
+      <div class="chart-box">
+        <div class="chart-title">Previsto × Pago por modalidade</div>
+        <div class="chart-sub">Comparativo do valor previsto e valor efetivamente pago em 2026</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="c-geral-bar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Distribuição do previsto</div>
+        <div class="chart-sub">Participação de cada modalidade</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="c-geral-pie"></canvas></div>
+      </div>
+    </div>
+
+    <div class="chart-row chart-row-1">
+      <div class="chart-box">
+        <div class="chart-title">Composição do orçamento consolidado</div>
+        <div class="chart-sub">Comprometido × Reservado para novas bolsas × Disponível</div>
+        <div class="chart-wrap" style="height:160px"><canvas id="c-geral-stacked"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PÁGINA 1 — PÓS-GRADUAÇÃO
+  ═══════════════════════════════════════ -->
+  <div class="canvas" id="page-1">
+
+    <div class="section-label">Pós-Graduação — 2026</div>
+
+    <div class="kpi-grid kpi-grid-4">
+      <div class="kpi">
+        <div class="kpi-label">Total Previsto</div>
+        <div class="kpi-value">R$ 600.000</div>
+        <div class="kpi-sub">30 bolsistas registrados</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Bolsas Ativas</div>
+        <div class="kpi-value">R$ 713.889</div>
+        <div class="kpi-sub pos">25 bolsistas · status ATIVA</div>
+      </div>
+      <div class="kpi orange">
+        <div class="kpi-label">Solicitadas</div>
+        <div class="kpi-value">R$ 7.319</div>
+        <div class="kpi-sub">2 bolsistas aguardando aprovação</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">Já Pago</div>
+        <div class="kpi-value">R$ 713.889</div>
+        <div class="kpi-sub">118,9% do previsto efetivado</div>
+      </div>
+    </div>
+
+    <div class="chart-row chart-row-11">
+      <div class="chart-box">
+        <div class="chart-title">Previsto × Pago — Pós-Graduação</div>
+        <div class="chart-sub">Valores em R$ — 2026</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-pos-bar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Distribuição por status</div>
+        <div class="chart-sub">Bolsistas por situação do processo</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-pos-status"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PÁGINA 2 — GRADUAÇÃO
+  ═══════════════════════════════════════ -->
+  <div class="canvas" id="page-2">
+
+    <div class="section-label">Graduação — 2026</div>
+
+    <div class="kpi-grid kpi-grid-4">
+      <div class="kpi">
+        <div class="kpi-label">Total Previsto</div>
+        <div class="kpi-value">R$ 164.500</div>
+        <div class="kpi-sub">17 bolsistas registrados</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Bolsas Ativas</div>
+        <div class="kpi-value">R$ 122.153</div>
+        <div class="kpi-sub pos">16 bolsistas · status ATIVA</div>
+      </div>
+      <div class="kpi orange">
+        <div class="kpi-label">Solicitadas</div>
+        <div class="kpi-value">R$ 5.317</div>
+        <div class="kpi-sub">1 bolsista aguardando aprovação</div>
+      </div>
+      <div class="kpi purple">
+        <div class="kpi-label">Já Pago</div>
+        <div class="kpi-value">R$ 122.153</div>
+        <div class="kpi-sub">74,3% do previsto efetivado</div>
+      </div>
+    </div>
+
+    <div class="chart-row chart-row-11">
+      <div class="chart-box">
+        <div class="chart-title">Previsto × Pago — Graduação</div>
+        <div class="chart-sub">Valores em R$ — 2026</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-grad-bar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Distribuição por status</div>
+        <div class="chart-sub">Bolsistas por situação do processo</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-grad-status"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       PÁGINA 3 — IDIOMAS
+  ═══════════════════════════════════════ -->
+  <div class="canvas" id="page-3">
+
+    <div class="section-label">Reembolso de Idiomas — 2025</div>
+
+    <div class="kpi-grid kpi-grid-4">
+      <div class="kpi">
+        <div class="kpi-label">Reserva Orçamentária Total</div>
+        <div class="kpi-value">R$ 210.000</div>
+        <div class="kpi-sub">55 processos ativos</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">Já Reembolsado</div>
+        <div class="kpi-value">R$ 164.500</div>
+        <div class="kpi-sub pos">78,3% da reserva utilizada</div>
+      </div>
+      <div class="kpi teal">
+        <div class="kpi-label">Classificados 2025</div>
+        <div class="kpi-value">55</div>
+        <div class="kpi-sub">R$ 164.500 comprometidos no edital</div>
+      </div>
+    </div>
+
+    <div class="chart-row chart-row-11">
+      <div class="chart-box">
+        <div class="chart-title">Reserva × Pago × Saldo — Idiomas</div>
+        <div class="chart-sub">Execução orçamentária 2025</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-id-bar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Execução da reserva</div>
+        <div class="chart-sub">% utilizado do orçamento de idiomas</div>
+        <div class="chart-wrap" style="height:200px"><canvas id="c-id-pie"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ── paleta de cores limpa e distinta ───────────────────────
+const C = {
+  blue:   '#0078d4',
+  green:  '#107c10',
+  orange: '#e07b00',
+  purple: '#5c2d91',
+  teal:   '#008080',
+  red:    '#c4262e',
+  blueL:  'rgba(0,120,212,0.15)',
+  greenL: 'rgba(16,124,16,0.15)',
+  orangeL:'rgba(224,123,0,0.15)',
+  purpleL:'rgba(92,45,145,0.15)',
+  tealL:  'rgba(0,128,128,0.15)',
 };
 
-var pgTitles = ['Relatório de Bolsistas — Visão Geral','Idiomas — Histórico 2015–2024','Pós-Graduação — Carteira 2026','Graduação — Carteira 2026'];
+const fmt = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
 
-function setPage(n){
-  document.querySelectorAll('.page-view').forEach(function(el,i){el.classList.toggle('active',i===n)});
-  document.querySelectorAll('.pb-tab').forEach(function(el,i){el.classList.toggle('active',i===n)});
-  document.querySelectorAll('.pb-nav-icon').forEach(function(el,i){el.classList.toggle('active',i===n)});
-  document.getElementById('report-title').textContent = pgTitles[n];
+// ── dados reais extraídos da planilha ──────────────────────
+const D = {
+  pos:  { previsto: 600000,  ativo: 713889, solicitado: 7319,  pago: 713889 },
+  grad: { previsto: 164500,  ativo: 122153, solicitado: 5317,  pago: 122153 },
+  id:   { reserva:  210000,  pago:  164500, saldo: 45500, classificados_val: 164500 },
+  cert: { previsto: 150000,  ativo: 0,      solicitado: 0,     pago: 0 },
+};
+
+// consolidado
+const totalPrev       = D.pos.previsto + D.grad.previsto + D.id.reserva + D.cert.previsto
+const totalAtivo      = D.pos.ativo    + D.grad.ativo    + D.id.pago
+const totalSolicit    = D.pos.solicitado + D.grad.solicitado
+const totalDisponivel = 111320
+
+// ── KPIs visão geral ───────────────────────────────────────
+document.getElementById('kpi-total-prev').innerText    = fmt(totalPrev);
+document.getElementById('kpi-comprometido').innerText  = fmt(totalAtivo);
+document.getElementById('kpi-comprometido-pct').innerText =
+  `${((totalAtivo/totalPrev)*100).toFixed(1)}% do total previsto`;
+document.getElementById('kpi-reservado').innerText     = fmt(totalSolicit);
+document.getElementById('kpi-disponivel').innerText    = fmt(totalDisponivel);
+
+// ── navegação ──────────────────────────────────────────────
+const pages   = document.querySelectorAll('.canvas');
+const tabs    = document.querySelectorAll('.tab');
+const navBtns = document.querySelectorAll('.nav-btn');
+let chartsBuilt = {};
+
+function setPage(n, el) {
+  pages.forEach((p,i)   => p.classList.toggle('active', i===n));
+  tabs.forEach((t,i)    => t.classList.toggle('active', i===n));
+  navBtns.forEach((b,i) => b.classList.toggle('active', i===n));
   buildCharts(n);
 }
 
-function toggleFilter(el, val){
-  document.querySelectorAll('.pb-filter-pill').forEach(function(p){p.classList.remove('active')});
-  el.classList.add('active');
+// ── helpers Chart.js ───────────────────────────────────────
+const baseOpts = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false } }
+};
+
+function bar(id, labels, datasets, opts={}) {
+  if (chartsBuilt[id]) return;
+  chartsBuilt[id] = new Chart(document.getElementById(id), {
+    type: 'bar',
+    data: { labels, datasets },
+    options: {
+      ...baseOpts,
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: '#f3f2f1' }, ticks: { callback: v => 'R$'+Math.round(v/1000)+'k', font: { size: 11 } } }
+      },
+      ...opts
+    }
+  });
 }
 
-function mk(id, cfg){
-  if(chartsBuilt[id]) return;
-  var el = document.getElementById(id);
-  if(!el) return;
-  chartsBuilt[id] = new Chart(el, cfg);
+function doughnut(id, labels, data, colors) {
+  if (chartsBuilt[id]) return;
+  chartsBuilt[id] = new Chart(document.getElementById(id), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
+    options: {
+      ...baseOpts,
+      cutout: '60%',
+      plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 8 } } }
+    }
+  });
 }
 
-function buildCharts(page){
-  if(page===0){
-    mk('c0a',{type:'bar',data:{labels:['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'R$ pago',data:[37404,119023,167339,102986,85757,35478,46614,31176,44038,52708],backgroundColor:[clrs.blueA,clrs.blueA,clrs.blue,clrs.blueA,clrs.blueA,'rgba(216,59,1,0.5)',clrs.blueA,clrs.blueA,clrs.blueA,clrs.blueA],borderColor:[clrs.blue,clrs.blue,clrs.blue,clrs.blue,clrs.blue,clrs.orange,clrs.blue,clrs.blue,clrs.blue,clrs.blue],borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.y.toLocaleString('pt-BR')}}}},scales:{x:{ticks:{font:{size:10},autoSkip:false}},y:{ticks:{callback:function(v){return'R$'+Math.round(v/1000)+'k'},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}}}}});
-    mk('c0b',{type:'doughnut',data:{labels:['Pós-Grad 2026','Graduação 2026'],datasets:[{data:[757619,7334],backgroundColor:[clrs.orange,clrs.purple],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:8}},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.toLocaleString('pt-BR')}}}}}});
-    mk('c0c',{type:'bar',data:{labels:['Idiomas','Pós-Grad','Graduação'],datasets:[{data:[199,27,12],backgroundColor:[clrs.blue,clrs.orange,clrs.purple],borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x+' bolsistas'}}}},scales:{x:{ticks:{font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
-    mk('c0d',{type:'line',data:{labels:['15→16','16→17','17→18','18→19','19→20','20→21','21→22','22→23','23→24'],datasets:[{data:[218,40,-38,-17,-59,31,-33,41,20],borderColor:clrs.green,backgroundColor:clrs.greenA,fill:true,tension:.35,pointBackgroundColor:clrs.green,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return(c.parsed.y>0?'+':'')+c.parsed.y+'%'}}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{callback:function(v){return v+'%'},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'},suggestedMin:-70,suggestedMax:250}}}});
+// ── gráficos por página ────────────────────────────────────
+function buildCharts(n) {
+
+  // PÁGINA 0 — Visão Geral
+  if (n === 0) {
+    bar('c-geral-bar',
+      ['Pós-Graduação','Graduação','Idiomas'],
+      [
+        { label:'Previsto', data:[D.pos.previsto, D.grad.previsto, D.id.reserva],
+          backgroundColor:[C.blueL, C.blueL, C.blueL],
+          borderColor:[C.blue, C.blue, C.blue], borderWidth:2, borderRadius:4 },
+        { label:'Pago', data:[D.pos.pago, D.grad.pago, D.id.pago],
+          backgroundColor:[C.blue, C.green, C.orange],
+          borderWidth:0, borderRadius:4 }
+      ],
+      { plugins:{ legend:{ display:true, position:'bottom', labels:{ font:{size:11}, boxWidth:10, padding:8 } } } }
+    );
+
+    doughnut('c-geral-pie',
+      ['Pós-Graduação','Graduação','Idiomas'],
+      [D.pos.previsto, D.grad.previsto, D.id.reserva],
+      [C.blue, C.green, C.orange]
+    );
+
+    if (!chartsBuilt['c-geral-stacked']) {
+      chartsBuilt['c-geral-stacked'] = new Chart(document.getElementById('c-geral-stacked'), {
+        type: 'bar',
+        data: {
+          labels: ['Consolidado 2026'],
+          datasets: [
+            { label:'Comprometido (ativo)', data:[totalAtivo],  backgroundColor: C.green,  borderRadius:4, borderSkipped:false },
+            { label:'Reservado (solicitado)',data:[totalSolicit],backgroundColor: C.orange, borderRadius:0, borderSkipped:false },
+            { label:'Disponível',           data:[totalDisponivel < 0 ? 0 : totalDisponivel], backgroundColor: C.teal, borderRadius:4, borderSkipped:false },
+          ]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display:true, position:'bottom', labels:{ font:{size:11}, boxWidth:10, padding:8 } } },
+          scales: {
+            x: { stacked:true, grid:{ color:'#f3f2f1' }, ticks:{ callback: v=>'R$'+Math.round(v/1000)+'k', font:{size:11} } },
+            y: { stacked:true, grid:{ display:false } }
+          }
+        }
+      });
+    }
   }
-  if(page===1){
-    mk('c1a',{type:'bar',data:{labels:['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Valor pago (R$)',data:[37404,119023,167339,102986,85757,35478,46614,31176,44038,52708],backgroundColor:function(c){var v=c.raw;return v===167339?clrs.blue:v===35478?clrs.orange:'rgba(0,120,212,0.4)'},borderColor:function(c){var v=c.raw;return v===167339?clrs.blue:v===35478?clrs.orange:clrs.blue},borderWidth:1.5,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.y.toLocaleString('pt-BR')}}}},scales:{x:{ticks:{autoSkip:false,font:{size:10}}},y:{ticks:{callback:function(v){return'R$'+Math.round(v/1000)+'k'},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}}}}});
-    mk('c1b',{type:'bar',data:{labels:['Gilmar P.','Caio F.','João E.','Alexandre P.','Marcelo O.'],datasets:[{data:[11999,11508,10250,10250,9757],backgroundColor:[clrs.blue,'rgba(0,120,212,0.7)','rgba(0,120,212,0.55)','rgba(0,120,212,0.55)','rgba(0,120,212,0.4)'],borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.x.toLocaleString('pt-BR')}}}},scales:{x:{ticks:{callback:function(v){return'R$'+Math.round(v/1000)+'k'},font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
-    mk('c1c',{type:'bar',data:{labels:['80','75','70','65','60','55','50','45','40','35','30','25','20','15'],datasets:[{data:[1,1,3,1,6,3,2,4,6,1,2,10,3,12],backgroundColor:function(c){var v=c.dataIndex;return v<=3?clrs.blue:v<=7?'rgba(0,120,212,0.55)':'rgba(0,120,212,0.3)'},borderRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y+' candidatos'}}}},scales:{x:{title:{display:true,text:'Nota',font:{size:10}},ticks:{font:{size:9},autoSkip:false}},y:{ticks:{font:{size:10},stepSize:1},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+
+  // PÁGINA 1 — POS
+  if (n === 1) {
+    bar('c-pos-bar',
+      ['Previsto','Pago'],
+      [{ data:[D.pos.previsto, D.pos.pago],
+         backgroundColor:[C.blueL, C.blue],
+         borderColor:[C.blue, C.blue], borderWidth:2, borderRadius:4 }]
+    );
+    doughnut('c-pos-status',
+      ['Ativa (25)','Solicitada (2)','A Arquivar (2)','Cancelada (1)'],
+      [734613, 7319, 17341, 0],
+      [C.green, C.orange, C.purple, C.red]
+    );
+    bar('c-pos-bolsistas',
+      ['Denilson A.','Fátima C.','Gustavo M.','Luciana F.','Rafael S.','Tatiana V.','Outros (19)'],
+      [{ data:[50652,48000,45000,42000,40000,38000,430961],
+         backgroundColor:[C.blue,C.blue,C.blue,C.blue,C.blue,C.blue,'rgba(0,120,212,0.4)'],
+         borderRadius:4, borderWidth:0 }],
+      { plugins:{ legend:{ display:false } },
+        scales:{ x:{ grid:{display:false}, ticks:{font:{size:10},maxRotation:30} },
+                 y:{ grid:{color:'#f3f2f1'}, ticks:{callback:v=>'R$'+Math.round(v/1000)+'k',font:{size:10}} } } }
+    );
   }
-  if(page===2){
-    mk('c2a',{type:'bar',data:{labels:['Diego T.','Roberta S.','Vanessa R.','Caio S.','Henrique T.','Eduardo O.','Viviane D.','Mateus V.','Otávio S.','Simone C.'],datasets:[{data:[53868,53868,46434,46431,45940,41915,41904,41346,41346,35595],backgroundColor:[clrs.orange,'rgba(216,59,1,0.7)','rgba(216,59,1,0.55)','rgba(216,59,1,0.55)','rgba(216,59,1,0.5)','rgba(216,59,1,0.45)','rgba(216,59,1,0.4)','rgba(216,59,1,0.38)','rgba(216,59,1,0.38)','rgba(216,59,1,0.32)'],borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.x.toLocaleString('pt-BR')}}}},scales:{x:{ticks:{callback:function(v){return'R$'+Math.round(v/1000)+'k'},font:{size:9}}},y:{ticks:{font:{size:9}}}}}});
-    mk('c2b',{type:'doughnut',data:{labels:['Ativa (23)','A Arquivar (2)','Solicitada (1)'],datasets:[{data:[23,2,1],backgroundColor:[clrs.green,clrs.orange,clrs.purple],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10,padding:6}}}}});
-    mk('c2c',{type:'bar',data:{labels:['Diego T.','Roberta S.','Vanessa R.','Caio S.','Henrique T.'],datasets:[{data:[7.1,7.1,6.1,6.1,6.1],backgroundColor:[clrs.purple,'rgba(92,45,145,0.7)','rgba(92,45,145,0.55)','rgba(92,45,145,0.55)','rgba(92,45,145,0.4)'],borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.x.toFixed(1)+'% do total'}}}},scales:{x:{ticks:{callback:function(v){return v+'%'},font:{size:10}}},y:{ticks:{font:{size:10}}}}}});
+
+  // PÁGINA 2 — GRAD
+  if (n === 2) {
+    bar('c-grad-bar',
+      ['Previsto','Pago'],
+      [{ data:[D.grad.previsto, D.grad.pago],
+         backgroundColor:[C.greenL, C.green],
+         borderColor:[C.green, C.green], borderWidth:2, borderRadius:4 }]
+    );
+    doughnut('c-grad-status',
+      ['Ativa (16)','Solicitada (1)'],
+      [D.grad.ativo, D.grad.solicitado],
+      [C.green, C.orange]
+    );
   }
-  if(page===3){
-    mk('c3a',{type:'bar',data:{labels:['Gabriela S.','Natália R.','Vanessa S.','Aline C.','Priscila C.','Caio R.','Beatriz A.','Murilo C.L.','Murilo C.S.','Ricardo C.','Otávio S.','Bruno F.'],datasets:[{data:[767,889,1321,1321,1321,1321,1321,1321,889,889,889,889],backgroundColor:'rgba(92,45,145,0.5)',borderColor:clrs.purple,borderWidth:1.5,borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.x.toLocaleString('pt-BR')+'/mês'}}}},scales:{x:{ticks:{callback:function(v){return'R$'+v},font:{size:9}}},y:{ticks:{font:{size:8}}}}}});
-    mk('c3b',{type:'bar',data:{labels:['Pós-Graduação','Graduação'],datasets:[{data:[757619,7334],backgroundColor:[clrs.orange,clrs.purple],borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return'R$ '+c.parsed.y.toLocaleString('pt-BR')}}}},scales:{x:{ticks:{font:{size:11}}},y:{ticks:{callback:function(v){return'R$'+Math.round(v/1000)+'k'},font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'}}}}});
+
+  // PÁGINA 3 — IDIOMAS
+  if (n === 3) {
+    bar('c-id-bar',
+      ['Reserva Total','Já Reembolsado',],
+      [{ data:[D.id.reserva, D.id.pago,],
+         backgroundColor:[C.blueL, C.orange,],
+         borderColor:[C.blue, C.orange, C.teal], borderWidth:2, borderRadius:4 }]
+    );
+    doughnut('c-id-pie',
+      ['Reembolsado (59,9%)','A classificar (30,2%)'],
+      [D.id.pago, D.id.reserva - D.id.pago],
+      [C.orange, C.blueL.replace('0.15','0.5')]
+    );
   }
 }
 
+// ── inicializa ─────────────────────────────────────────────
 buildCharts(0);
 </script>
+</body>
+</html>
