@@ -27,6 +27,14 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
 .tab:hover{color:#0078d4}
 .tab.active{color:#0078d4;border-bottom-color:#0078d4;font-weight:500}
 
+/* sub-tabs */
+.subtabbar{display:flex;gap:8px;margin:12px 0 8px;padding:0 2px}
+.subtab{padding:8px 12px;border-radius:999px;border:1px solid #e1dfdd;background:#faf9f8;color:#605e5c;font-size:12px;cursor:pointer;transition:all .15s}
+.subtab:hover{color:#0078d4;border-color:#b3d7f2}
+.subtab.active{background:#0078d4;color:#fff;border-color:#0078d4}
+.subtab-panel{display:none}
+.subtab-panel.active{display:block}
+
 /* canvas */
 .canvas{padding:16px;display:none}
 .canvas.active{display:block}
@@ -193,16 +201,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
     </div>
 
-    <div class="chart-row chart-row-11">
-      <div class="chart-box">
-        <div class="chart-title">Previsto × Pago — Pós-Graduação</div>
-        <div class="chart-sub">Valores em R$ — 2026</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-pos-bar"></canvas></div>
+    <div class="subtabbar">
+      <div class="subtab active" data-group="pos" onclick="setSubPage('pos',0)">Programas (histórico)</div>
+      <div class="subtab" data-group="pos" onclick="setSubPage('pos',1)">Bolsistas por ano (histórico)</div>
+    </div>
+
+    <div class="subtab-panel active" data-group="pos">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Principais programas de pós-graduação</div>
+          <div class="chart-sub">Histórico — quantidade de bolsistas por modalidade</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-pos-programas"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Pós: 83</div>
+        </div>
       </div>
-      <div class="chart-box">
-        <div class="chart-title">Distribuição por status</div>
-        <div class="chart-sub">Bolsistas por situação do processo</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-pos-status"></canvas></div>
+    </div>
+
+    <div class="subtab-panel" data-group="pos">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Quantidade de bolsistas por ano</div>
+          <div class="chart-sub">Histórico — evolução anual na pós-graduação</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-pos-anos"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Pós: 83</div>
+        </div>
       </div>
     </div>
   </div>
@@ -237,16 +259,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
     </div>
 
-    <div class="chart-row chart-row-11">
-      <div class="chart-box">
-        <div class="chart-title">Previsto × Pago — Graduação</div>
-        <div class="chart-sub">Valores em R$ — 2026</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-grad-bar"></canvas></div>
+    <div class="subtabbar">
+      <div class="subtab active" data-group="grad" onclick="setSubPage('grad',0)">Cursos (histórico)</div>
+      <div class="subtab" data-group="grad" onclick="setSubPage('grad',1)">Bolsistas por ano (histórico)</div>
+    </div>
+
+    <div class="subtab-panel active" data-group="grad">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Principais cursos de graduação</div>
+          <div class="chart-sub">Histórico — direito, medicina e demais cursos</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-grad-cursos"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Graduação: 54</div>
+        </div>
       </div>
-      <div class="chart-box">
-        <div class="chart-title">Distribuição por status</div>
-        <div class="chart-sub">Bolsistas por situação do processo</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-grad-status"></canvas></div>
+    </div>
+
+    <div class="subtab-panel" data-group="grad">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Quantidade de bolsistas por ano</div>
+          <div class="chart-sub">Histórico — evolução anual na graduação</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-grad-anos"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Graduação: 54</div>
+        </div>
       </div>
     </div>
   </div>
@@ -276,16 +312,30 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
     </div>
 
-    <div class="chart-row chart-row-11">
-      <div class="chart-box">
-        <div class="chart-title">Reserva × Pago × Saldo — Idiomas</div>
-        <div class="chart-sub">Execução orçamentária 2025</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-id-bar"></canvas></div>
+    <div class="subtabbar">
+      <div class="subtab active" data-group="idi" onclick="setSubPage('idi',0)">Idiomas (histórico)</div>
+      <div class="subtab" data-group="idi" onclick="setSubPage('idi',1)">Bolsistas por ano (histórico)</div>
+    </div>
+
+    <div class="subtab-panel active" data-group="idi">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Principais idiomas</div>
+          <div class="chart-sub">Histórico — quantidade de estudantes por idioma</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-idiomas"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Idiomas: 337</div>
+        </div>
       </div>
-      <div class="chart-box">
-        <div class="chart-title">Execução da reserva</div>
-        <div class="chart-sub">% utilizado do orçamento de idiomas</div>
-        <div class="chart-wrap" style="height:200px"><canvas id="c-id-pie"></canvas></div>
+    </div>
+
+    <div class="subtab-panel" data-group="idi">
+      <div class="chart-row chart-row-1">
+        <div class="chart-box">
+          <div class="chart-title">Quantidade de alunos por ano</div>
+          <div class="chart-sub">Histórico — evolução anual no programa de idiomas</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="c-idi-anos"></canvas></div>
+          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Idiomas: 337</div>
+        </div>
       </div>
     </div>
   </div>
@@ -337,12 +387,31 @@ const pages   = document.querySelectorAll('.canvas');
 const tabs    = document.querySelectorAll('.tab');
 const navBtns = document.querySelectorAll('.nav-btn');
 let chartsBuilt = {};
+let currentPage = 0;
 
 function setPage(n, el) {
+  currentPage = n;
   pages.forEach((p,i)   => p.classList.toggle('active', i===n));
   tabs.forEach((t,i)    => t.classList.toggle('active', i===n));
   navBtns.forEach((b,i) => b.classList.toggle('active', i===n));
   buildCharts(n);
+}
+
+function setSubPage(group, idx) {
+  document.querySelectorAll(`.subtab[data-group="${group}"]`).forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll(`.subtab-panel[data-group="${group}"]`).forEach((p,i) => p.classList.toggle('active', i===idx));
+  if (currentPage === 1) {
+    if (idx === 0 && !chartsBuilt['c-pos-programas']) buildCharts(1);
+    if (idx === 1 && !chartsBuilt['c-pos-anos']) buildCharts(1);
+  }
+  if (currentPage === 2) {
+    if (idx === 0 && !chartsBuilt['c-grad-cursos']) buildCharts(2);
+    if (idx === 1 && !chartsBuilt['c-grad-anos']) buildCharts(2);
+  }
+  if (currentPage === 3) {
+    if (idx === 0 && !chartsBuilt['c-idiomas']) buildCharts(3);
+    if (idx === 1 && !chartsBuilt['c-idi-anos']) buildCharts(3);
+  }
 }
 
 // ── helpers Chart.js ───────────────────────────────────────
@@ -431,55 +500,46 @@ function buildCharts(n) {
 
   // PÁGINA 1 — POS
   if (n === 1) {
-    bar('c-pos-bar',
-      ['Previsto','Pago'],
-      [{ data:[D.pos.previsto, D.pos.pago],
-         backgroundColor:[C.blueL, C.blue],
-         borderColor:[C.blue, C.blue], borderWidth:2, borderRadius:4 }]
+    doughnut('c-pos-programas',
+      ['Doutorado', 'Mestrado', 'MBA', 'Especialização'],
+      [8, 31, 8, 1],
+      [C.blue, C.purple, C.teal, C.orange, C.green]
     );
-    doughnut('c-pos-status',
-      ['Ativa (25)','Solicitada (2)','A Arquivar (2)','Cancelada (1)'],
-      [734613, 7319, 17341, 0],
-      [C.green, C.orange, C.purple, C.red]
-    );
-    bar('c-pos-bolsistas',
-      ['Denilson A.','Fátima C.','Gustavo M.','Luciana F.','Rafael S.','Tatiana V.','Outros (19)'],
-      [{ data:[50652,48000,45000,42000,40000,38000,430961],
-         backgroundColor:[C.blue,C.blue,C.blue,C.blue,C.blue,C.blue,'rgba(0,120,212,0.4)'],
-         borderRadius:4, borderWidth:0 }],
+    bar('c-pos-anos',
+      ['2014','2015','2016','2017','2018','2019','2021','2022','2024','2025', '2026'],
+      [{ data:[1, 6, 7, 5, 5, 4, 8, 5, 10, 15, 16], backgroundColor:C.blue, borderRadius:4, borderWidth:0 }],
       { plugins:{ legend:{ display:false } },
-        scales:{ x:{ grid:{display:false}, ticks:{font:{size:10},maxRotation:30} },
-                 y:{ grid:{color:'#f3f2f1'}, ticks:{callback:v=>'R$'+Math.round(v/1000)+'k',font:{size:10}} } } }
+        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
     );
   }
 
   // PÁGINA 2 — GRAD
   if (n === 2) {
-    bar('c-grad-bar',
-      ['Previsto','Pago'],
-      [{ data:[D.grad.previsto, D.grad.pago],
-         backgroundColor:[C.greenL, C.green],
-         borderColor:[C.green, C.green], borderWidth:2, borderRadius:4 }]
+    doughnut('c-grad-cursos',
+      ['Direito','Contabilidade','Ciências Contábeis','Administração','Psicologia'],
+      [47, 2, 2, 1, 1],
+      [C.blue, C.green, C.orange]
     );
-    doughnut('c-grad-status',
-      ['Ativa (16)','Solicitada (1)'],
-      [D.grad.ativo, D.grad.solicitado],
-      [C.green, C.orange]
+    bar('c-grad-anos',
+      ['2016','2017','2018','2019','2021','2022','2023','2024','2025', '2026'],
+      [{ data:[18, 5, 4, 1, 3, 3, 5, 3, 2, 8], backgroundColor:C.green, borderRadius:4, borderWidth:0 }],
+      { plugins:{ legend:{ display:false } },
+        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
     );
   }
 
   // PÁGINA 3 — IDIOMAS
   if (n === 3) {
-    bar('c-id-bar',
-      ['Reserva Total','Já Reembolsado',],
-      [{ data:[D.id.reserva, D.id.pago,],
-         backgroundColor:[C.blueL, C.orange,],
-         borderColor:[C.blue, C.orange, C.teal], borderWidth:2, borderRadius:4 }]
+    doughnut('c-idiomas',
+      ['Inglês','Francês','Espanhol','Italiano','Alemão'],
+      [263, 38, 30, 4, 3],
+      [C.blue, C.orange, C.teal, C.purple, C.green]
     );
-    doughnut('c-id-pie',
-      ['Reembolsado (59,9%)','A classificar (30,2%)'],
-      [D.id.pago, D.id.reserva - D.id.pago],
-      [C.orange, C.blueL.replace('0.15','0.5')]
+    bar('c-idi-anos',
+      ['2015','2016','2017','2018','2019','2021','2022','2023','2024','2025', '2026'],
+      [{ data:[49, 39, 47, 10, 15, 11, 11, 24, 28, 54, 49], backgroundColor:C.orange, borderRadius:4, borderWidth:0 }],
+      { plugins:{ legend:{ display:false } },
+        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
     );
   }
 }
