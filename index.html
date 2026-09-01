@@ -191,7 +191,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
       <div class="kpi orange">
         <div class="kpi-label">Solicitadas</div>
-        <div class="kpi-value">R$ 7.319</div>
+        <div class="kpi-value">R$ 30.307</div>
         <div class="kpi-sub">2 bolsistas aguardando aprovação</div>
       </div>
       <div class="kpi purple">
@@ -249,13 +249,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
       <div class="kpi orange">
         <div class="kpi-label">Solicitadas</div>
-        <div class="kpi-value">R$ 5.317</div>
+        <div class="kpi-value">R$ 9.689</div>
         <div class="kpi-sub">1 bolsista aguardando aprovação</div>
       </div>
       <div class="kpi purple">
         <div class="kpi-label">Já Pago</div>
-        <div class="kpi-value">R$ 122.153</div>
-        <div class="kpi-sub">74,3% do previsto efetivado</div>
+        <div class="kpi-value">R$ 117.996</div>
+        <div class="kpi-sub">71,8% do previsto efetivado</div>
       </div>
     </div>
 
@@ -362,8 +362,8 @@ const fmt = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maxim
 
 // ── dados reais extraídos da planilha ──────────────────────
 const D = {
-  pos:  { previsto: 600000,  ativo: 713889, solicitado: 7319,  pago: 713889 },
-  grad: { previsto: 164500,  ativo: 122153, solicitado: 5317,  pago: 122153 },
+  pos:  { previsto: 600000,  ativo: 713889, solicitado: 30307,  pago: 713889 },
+  grad: { previsto: 164500,  ativo: 122153, solicitado: 9689,  pago: 117996 },
   id:   { reserva:  210000,  pago:  164500, saldo: 45500, classificados_val: 164500 },
   cert: { previsto: 150000,  ativo: 0,      solicitado: 0,     pago: 0 },
 };
@@ -372,7 +372,7 @@ const D = {
 const totalPrev       = D.pos.previsto + D.grad.previsto + D.id.reserva + D.cert.previsto
 const totalAtivo      = D.pos.ativo    + D.grad.ativo    + D.id.pago
 const totalSolicit    = D.pos.solicitado + D.grad.solicitado
-const totalDisponivel = 111320
+const totalDisponivel = 88117
 
 // ── KPIs visão geral ───────────────────────────────────────
 document.getElementById('kpi-total-prev').innerText    = fmt(totalPrev);
