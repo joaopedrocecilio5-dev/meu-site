@@ -109,7 +109,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
 <div class="main">
   <div class="topbar">
     <span class="topbar-title">Painel Financeiro de Bolsas</span>
-    <span class="badge">Dados 2026</span>
+    <span class="badge" id="data-badge">Carregando dados...</span>
   </div>
 
   <div class="tabbar">
@@ -124,13 +124,13 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
   ═══════════════════════════════════════ -->
   <div class="canvas active" id="page-0">
 
-    <div class="section-label">Consolidado 2026 — todas as modalidades</div>
+    <div class="section-label" id="overview-section-label"></div>
 
     <div class="kpi-grid kpi-grid-3">
       <div class="kpi">
         <div class="kpi-label">Valor Total Previsto</div>
         <div class="kpi-value" id="kpi-total-prev"></div>
-        <div class="kpi-sub">POS + GRAD + Idiomas</div>
+        <div class="kpi-sub" id="kpi-total-prev-sub"></div>
       </div>
       <div class="kpi green">
         <div class="kpi-label">Já Comprometido (bolsas ativas)</div>
@@ -140,7 +140,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       <div class="kpi orange">
         <div class="kpi-label">Reservado — novas solicitações</div>
         <div class="kpi-value" id="kpi-reservado"></div>
-        <div class="kpi-sub">Bolsistas em status SOLICITADA</div>
+        <div class="kpi-sub">Valores solicitados no arquivo JSON</div>
       </div>
       <div class="kpi teal">
         <div class="kpi-label">Valor Disponível</div>
@@ -152,7 +152,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
     <div class="chart-row chart-row-21">
       <div class="chart-box">
         <div class="chart-title">Previsto × Pago por modalidade</div>
-        <div class="chart-sub">Comparativo do valor previsto e valor efetivamente pago em 2026</div>
+        <div class="chart-sub" id="overview-bar-sub"></div>
         <div class="chart-wrap" style="height:220px"><canvas id="c-geral-bar"></canvas></div>
       </div>
       <div class="chart-box">
@@ -176,57 +176,44 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
   ═══════════════════════════════════════ -->
   <div class="canvas" id="page-1">
 
-    <div class="section-label">Pós-Graduação — 2026</div>
+  <div class="section-label" id="pos-section-label"></div>
 
     <div class="kpi-grid kpi-grid-4">
       <div class="kpi">
         <div class="kpi-label">Total Previsto</div>
-        <div class="kpi-value">R$ 600.000</div>
-        <div class="kpi-sub">30 bolsistas registrados</div>
+        <div class="kpi-value" id="pos-previsto"></div>
+        <div class="kpi-sub" id="pos-diferenca"></div>
       </div>
       <div class="kpi green">
-        <div class="kpi-label">Bolsas Ativas</div>
-        <div class="kpi-value">R$ 713.889</div>
-        <div class="kpi-sub pos">25 bolsistas · status ATIVA</div>
+        <div class="kpi-label">Valor Comprometido</div>
+        <div class="kpi-value" id="pos-ativo"></div>
+        <div class="kpi-sub pos" id="pos-comprometido-pct"></div>
       </div>
       <div class="kpi orange">
-        <div class="kpi-label">Solicitadas</div>
-        <div class="kpi-value">R$ 30.307</div>
-        <div class="kpi-sub">2 bolsistas aguardando aprovação</div>
+        <div class="kpi-label">Valor Solicitado</div>
+        <div class="kpi-value" id="pos-solicitado"></div>
+        <div class="kpi-sub" id="pos-livre"></div>
       </div>
       <div class="kpi purple">
         <div class="kpi-label">Já Pago</div>
-        <div class="kpi-value">R$ 713.889</div>
-        <div class="kpi-sub">118,9% do previsto efetivado</div>
+        <div class="kpi-value" id="pos-pago"></div>
+        <div class="kpi-sub" id="pos-pago-pct"></div>
       </div>
     </div>
 
-    <div class="subtabbar">
-      <div class="subtab active" data-group="pos" onclick="setSubPage('pos',0)">Programas (histórico)</div>
-      <div class="subtab" data-group="pos" onclick="setSubPage('pos',1)">Bolsistas por ano (histórico)</div>
-    </div>
-
-    <div class="subtab-panel active" data-group="pos">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Principais programas de pós-graduação</div>
-          <div class="chart-sub">Histórico — quantidade de bolsistas por modalidade</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-pos-programas"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Pós: 83</div>
-        </div>
+    <div class="chart-row chart-row-21">
+      <div class="chart-box">
+        <div class="chart-title">Composição financeira</div>
+        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="c-pos-financeiro"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Resumo dos valores</div>
+        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
+        <table class="data-table"><tbody id="pos-financeiro-tabela"></tbody></table>
       </div>
     </div>
 
-    <div class="subtab-panel" data-group="pos">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Quantidade de bolsistas por ano</div>
-          <div class="chart-sub">Histórico — evolução anual na pós-graduação</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-pos-anos"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Pós: 83</div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- ═══════════════════════════════════════
@@ -234,57 +221,44 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
   ═══════════════════════════════════════ -->
   <div class="canvas" id="page-2">
 
-    <div class="section-label">Graduação — 2026</div>
+    <div class="section-label" id="grad-section-label"></div>
 
     <div class="kpi-grid kpi-grid-4">
       <div class="kpi">
         <div class="kpi-label">Total Previsto</div>
-        <div class="kpi-value">R$ 164.500</div>
-        <div class="kpi-sub">17 bolsistas registrados</div>
+        <div class="kpi-value" id="grad-previsto"></div>
+        <div class="kpi-sub" id="grad-diferenca"></div>
       </div>
       <div class="kpi green">
-        <div class="kpi-label">Bolsas Ativas</div>
-        <div class="kpi-value">R$ 122.153</div>
-        <div class="kpi-sub pos">16 bolsistas · status ATIVA</div>
+        <div class="kpi-label">Valor Comprometido</div>
+        <div class="kpi-value" id="grad-ativo"></div>
+        <div class="kpi-sub pos" id="grad-comprometido-pct"></div>
       </div>
       <div class="kpi orange">
-        <div class="kpi-label">Solicitadas</div>
-        <div class="kpi-value">R$ 9.689</div>
-        <div class="kpi-sub">1 bolsista aguardando aprovação</div>
+        <div class="kpi-label">Valor Solicitado</div>
+        <div class="kpi-value" id="grad-solicitado"></div>
+        <div class="kpi-sub" id="grad-livre"></div>
       </div>
       <div class="kpi purple">
         <div class="kpi-label">Já Pago</div>
-        <div class="kpi-value">R$ 117.996</div>
-        <div class="kpi-sub">71,8% do previsto efetivado</div>
+        <div class="kpi-value" id="grad-pago"></div>
+        <div class="kpi-sub" id="grad-pago-pct"></div>
       </div>
     </div>
 
-    <div class="subtabbar">
-      <div class="subtab active" data-group="grad" onclick="setSubPage('grad',0)">Cursos (histórico)</div>
-      <div class="subtab" data-group="grad" onclick="setSubPage('grad',1)">Bolsistas por ano (histórico)</div>
-    </div>
-
-    <div class="subtab-panel active" data-group="grad">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Principais cursos de graduação</div>
-          <div class="chart-sub">Histórico — direito, medicina e demais cursos</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-grad-cursos"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Graduação: 54</div>
-        </div>
+    <div class="chart-row chart-row-21">
+      <div class="chart-box">
+        <div class="chart-title">Composição financeira</div>
+        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="c-grad-financeiro"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Resumo dos valores</div>
+        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
+        <table class="data-table"><tbody id="grad-financeiro-tabela"></tbody></table>
       </div>
     </div>
 
-    <div class="subtab-panel" data-group="grad">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Quantidade de bolsistas por ano</div>
-          <div class="chart-sub">Histórico — evolução anual na graduação</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-grad-anos"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Graduação: 54</div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- ═══════════════════════════════════════
@@ -292,50 +266,41 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
   ═══════════════════════════════════════ -->
   <div class="canvas" id="page-3">
 
-    <div class="section-label">Reembolso de Idiomas — 2025</div>
+    <div class="section-label" id="idi-section-label"></div>
 
     <div class="kpi-grid kpi-grid-4">
       <div class="kpi">
         <div class="kpi-label">Reserva Orçamentária Total</div>
-        <div class="kpi-value">R$ 210.000</div>
-        <div class="kpi-sub">55 processos ativos</div>
+        <div class="kpi-value" id="idi-reserva"></div>
+        <div class="kpi-sub" id="idi-processos"></div>
       </div>
       <div class="kpi green">
         <div class="kpi-label">Já Reembolsado</div>
-        <div class="kpi-value">R$ 164.500</div>
-        <div class="kpi-sub pos">78,3% da reserva utilizada</div>
+        <div class="kpi-value" id="idi-pago"></div>
+        <div class="kpi-sub pos" id="idi-pago-pct"></div>
       </div>
       <div class="kpi teal">
-        <div class="kpi-label">Classificados 2025</div>
-        <div class="kpi-value">55</div>
-        <div class="kpi-sub">R$ 164.500 comprometidos no edital</div>
+        <div class="kpi-label">Valor Comprometido</div>
+        <div class="kpi-value" id="idi-ativo"></div>
+        <div class="kpi-sub" id="idi-ativo-pct"></div>
+      </div>
+      <div class="kpi orange">
+        <div class="kpi-label">Orçamento Livre</div>
+        <div class="kpi-value" id="idi-livre"></div>
+        <div class="kpi-sub">Valor disponível na modalidade</div>
       </div>
     </div>
 
-    <div class="subtabbar">
-      <div class="subtab active" data-group="idi" onclick="setSubPage('idi',0)">Idiomas (histórico)</div>
-      <div class="subtab" data-group="idi" onclick="setSubPage('idi',1)">Bolsistas por ano (histórico)</div>
-    </div>
-
-    <div class="subtab-panel active" data-group="idi">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Principais idiomas</div>
-          <div class="chart-sub">Histórico — quantidade de estudantes por idioma</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-idiomas"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Idiomas: 337</div>
-        </div>
+    <div class="chart-row chart-row-21">
+      <div class="chart-box">
+        <div class="chart-title">Composição financeira</div>
+        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="c-idi-financeiro"></canvas></div>
       </div>
-    </div>
-
-    <div class="subtab-panel" data-group="idi">
-      <div class="chart-row chart-row-1">
-        <div class="chart-box">
-          <div class="chart-title">Quantidade de alunos por ano</div>
-          <div class="chart-sub">Histórico — evolução anual no programa de idiomas</div>
-          <div class="chart-wrap" style="height:240px"><canvas id="c-idi-anos"></canvas></div>
-          <div class="chart-sub" style="margin-top:10px;font-weight:600;color:#252423">Total de alunos no histórico — Idiomas: 337</div>
-        </div>
+      <div class="chart-box">
+        <div class="chart-title">Resumo dos valores</div>
+        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
+        <table class="data-table"><tbody id="idi-financeiro-tabela"></tbody></table>
       </div>
     </div>
   </div>
@@ -358,29 +323,123 @@ const C = {
   tealL:  'rgba(0,128,128,0.15)',
 };
 
-const fmt = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const fmt = v => Number(v || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
 
-// ── dados reais extraídos da planilha ──────────────────────
-const D = {
-  pos:  { previsto: 600000,  ativo: 713889, solicitado: 30307,  pago: 713889 },
-  grad: { previsto: 164500,  ativo: 122153, solicitado: 9689,  pago: 117996 },
-  id:   { reserva:  210000,  pago:  164500, saldo: 45500, classificados_val: 164500 },
-  cert: { previsto: 150000,  ativo: 0,      solicitado: 0,     pago: 0 },
-};
+// ── dados carregados do JSON gerado a partir da planilha ────
+let D;
+let totalPrev;
+let totalAtivo;
+let totalSolicit;
+let totalDisponivel;
 
-// consolidado
-const totalPrev       = D.pos.previsto + D.grad.previsto + D.id.reserva + D.cert.previsto
-const totalAtivo      = D.pos.ativo    + D.grad.ativo    + D.id.pago
-const totalSolicit    = D.pos.solicitado + D.grad.solicitado
-const totalDisponivel = 88117
+const setText = (id, value) => { document.getElementById(id).innerText = value; };
+const pct = (value, total) => total ? `${((value / total) * 100).toFixed(1)}%` : '0,0%';
 
-// ── KPIs visão geral ───────────────────────────────────────
-document.getElementById('kpi-total-prev').innerText    = fmt(totalPrev);
-document.getElementById('kpi-comprometido').innerText  = fmt(totalAtivo);
-document.getElementById('kpi-comprometido-pct').innerText =
-  `${((totalAtivo/totalPrev)*100).toFixed(1)}% do total previsto`;
-document.getElementById('kpi-reservado').innerText     = fmt(totalSolicit);
-document.getElementById('kpi-disponivel').innerText    = fmt(totalDisponivel);
+function normalizeData(data) {
+  const rows = Array.isArray(data.bolsas?.body) ? data.bolsas.body : [];
+  const byName = name => rows.find(row => row.nome.toLowerCase() === name.toLowerCase()) || {};
+  const makeItem = (row, nome) => ({
+    nome,
+    previsto: Number(row.previsto || 0),
+    pago: Number(row.pago || 0),
+    solicitado: Number(row.solicitado || 0),
+    diferenca: Number(row.diferenca || 0),
+    orcamento_livre: Number(row.orcamento_livre || 0),
+    ativo: Number(row.previsto || 0) - Number(row.diferenca || 0)
+  });
+
+  const pos = makeItem(byName('Bolsa de Pós-Graduação'), 'Pós-Graduação');
+  const grad = makeItem(byName('Bolsa de Graduação'), 'Graduação');
+  const id = makeItem(byName('Bolsa idioma'), 'Idiomas');
+  const cert = makeItem(byName('Bolsa de Certificação'), 'Certificação');
+  id.reserva = id.previsto;
+  id.processos = 0;
+
+  return {
+    ...data,
+    pos,
+    grad,
+    id,
+    cert,
+    resumo: { modalidades: `${rows.length - 1} modalidades carregadas` }
+  };
+}
+
+function renderData(data) {
+  D = normalizeData(data);
+  totalPrev = D.pos.previsto + D.grad.previsto + D.id.previsto + D.cert.previsto;
+  totalAtivo = D.pos.ativo + D.grad.ativo + D.id.ativo + D.cert.ativo;
+  totalSolicit = D.pos.solicitado + D.grad.solicitado + D.id.solicitado + D.cert.solicitado;
+  totalDisponivel = totalPrev - totalAtivo - totalSolicit;
+
+  setText('data-badge', `Dados ${D.ano}`);
+  setText('overview-section-label', `Consolidado ${D.ano} — todas as modalidades`);
+  setText('overview-bar-sub', `Comparativo do valor previsto e valor efetivamente pago em ${D.ano}`);
+  setText('kpi-total-prev', fmt(totalPrev));
+  setText('kpi-total-prev-sub', D.resumo.modalidades);
+  setText('kpi-comprometido', fmt(totalAtivo));
+  setText('kpi-comprometido-pct', `${pct(totalAtivo, totalPrev)} do total previsto`);
+  setText('kpi-reservado', fmt(totalSolicit));
+  setText('kpi-disponivel', fmt(totalDisponivel));
+
+  renderScholarshipKpis('pos', D.pos);
+  renderScholarshipKpis('grad', D.grad);
+  setText('pos-section-label', `${D.pos.nome} — ${D.ano}`);
+  setText('grad-section-label', `${D.grad.nome} — ${D.ano}`);
+  setText('idi-processos', `Diferença: ${fmt(D.id.diferenca)}`);
+  setText('idi-reserva', fmt(D.id.previsto));
+  setText('idi-pago', fmt(D.id.pago));
+  setText('idi-ativo', fmt(D.id.ativo));
+  setText('idi-ativo-pct', `${pct(D.id.ativo, D.id.previsto)} do previsto comprometido`);
+  setText('idi-livre', fmt(D.id.orcamento_livre));
+  renderFinancialDetails('pos', D.pos, C.blue);
+  renderFinancialDetails('grad', D.grad, C.green);
+  renderFinancialDetails('idi', D.id, C.orange);
+}
+function renderScholarshipKpis(prefix, item) {
+  setText(`${prefix}-previsto`, fmt(item.previsto));
+  setText(`${prefix}-diferenca`, `Diferença: ${fmt(item.diferenca)}`);
+  setText(`${prefix}-ativo`, fmt(item.ativo));
+  setText(`${prefix}-comprometido-pct`, `${pct(item.ativo, item.previsto)} do previsto comprometido`);
+  setText(`${prefix}-solicitado`, fmt(item.solicitado));
+  setText(`${prefix}-livre`, `Orçamento livre: ${fmt(item.orcamento_livre)}`);
+  setText(`${prefix}-pago`, fmt(item.pago));
+  setText(`${prefix}-pago-pct`, `${pct(item.pago, item.previsto)} do previsto efetivado`);
+}
+
+function renderFinancialDetails(prefix, item, color) {
+  const table = document.getElementById(`${prefix}-financeiro-tabela`);
+  table.innerHTML = [
+    ['Previsto', item.previsto],
+    ['Comprometido', item.ativo],
+    ['Pago', item.pago],
+    ['Solicitado', item.solicitado],
+    ['Diferença', item.diferenca],
+    ['Orçamento livre', item.orcamento_livre]
+  ].map(([label, value]) => `<tr><th>${label}</th><td>${fmt(value)}</td></tr>`).join('');
+
+  if (chartsBuilt[`${prefix}-financeiro`]) return;
+  chartsBuilt[`${prefix}-financeiro`] = new Chart(document.getElementById(`c-${prefix}-financeiro`), {
+    type: 'bar',
+    data: {
+      labels: ['Orçamento'],
+      datasets: [
+        { label: 'Comprometido', data: [item.ativo], backgroundColor: color, borderSkipped: false },
+        { label: 'Solicitado', data: [item.solicitado], backgroundColor: C.orange, borderSkipped: false },
+        { label: 'Livre', data: [item.orcamento_livre], backgroundColor: C.teal, borderSkipped: false }
+      ]
+    },
+    options: {
+      ...baseOpts,
+      indexAxis: 'y',
+      plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 8 } } },
+      scales: {
+        x: { stacked: true, grid: { color: '#f3f2f1' }, ticks: { callback: v => 'R$' + Math.round(v / 1000) + 'k', font: { size: 11 } } },
+        y: { stacked: true, grid: { display: false } }
+      }
+    }
+  });
+}
 
 // ── navegação ──────────────────────────────────────────────
 const pages   = document.querySelectorAll('.canvas');
@@ -395,23 +454,6 @@ function setPage(n, el) {
   tabs.forEach((t,i)    => t.classList.toggle('active', i===n));
   navBtns.forEach((b,i) => b.classList.toggle('active', i===n));
   buildCharts(n);
-}
-
-function setSubPage(group, idx) {
-  document.querySelectorAll(`.subtab[data-group="${group}"]`).forEach((t,i) => t.classList.toggle('active', i===idx));
-  document.querySelectorAll(`.subtab-panel[data-group="${group}"]`).forEach((p,i) => p.classList.toggle('active', i===idx));
-  if (currentPage === 1) {
-    if (idx === 0 && !chartsBuilt['c-pos-programas']) buildCharts(1);
-    if (idx === 1 && !chartsBuilt['c-pos-anos']) buildCharts(1);
-  }
-  if (currentPage === 2) {
-    if (idx === 0 && !chartsBuilt['c-grad-cursos']) buildCharts(2);
-    if (idx === 1 && !chartsBuilt['c-grad-anos']) buildCharts(2);
-  }
-  if (currentPage === 3) {
-    if (idx === 0 && !chartsBuilt['c-idiomas']) buildCharts(3);
-    if (idx === 1 && !chartsBuilt['c-idi-anos']) buildCharts(3);
-  }
 }
 
 // ── helpers Chart.js ───────────────────────────────────────
@@ -456,29 +498,29 @@ function buildCharts(n) {
   // PÁGINA 0 — Visão Geral
   if (n === 0) {
     bar('c-geral-bar',
-      ['Pós-Graduação','Graduação','Idiomas'],
+      [D.pos.nome, D.grad.nome, D.id.nome, D.cert.nome],
       [
-        { label:'Previsto', data:[D.pos.previsto, D.grad.previsto, D.id.reserva],
-          backgroundColor:[C.blueL, C.blueL, C.blueL],
-          borderColor:[C.blue, C.blue, C.blue], borderWidth:2, borderRadius:4 },
-        { label:'Pago', data:[D.pos.pago, D.grad.pago, D.id.pago],
-          backgroundColor:[C.blue, C.green, C.orange],
+        { label:'Previsto', data:[D.pos.previsto, D.grad.previsto, D.id.previsto, D.cert.previsto],
+          backgroundColor:[C.blueL, C.blueL, C.blueL, C.blueL],
+          borderColor:[C.blue, C.blue, C.blue, C.blue], borderWidth:2, borderRadius:4 },
+        { label:'Pago', data:[D.pos.pago, D.grad.pago, D.id.pago, D.cert.pago],
+          backgroundColor:[C.blue, C.green, C.orange, C.purple],
           borderWidth:0, borderRadius:4 }
       ],
       { plugins:{ legend:{ display:true, position:'bottom', labels:{ font:{size:11}, boxWidth:10, padding:8 } } } }
     );
 
     doughnut('c-geral-pie',
-      ['Pós-Graduação','Graduação','Idiomas'],
-      [D.pos.previsto, D.grad.previsto, D.id.reserva],
-      [C.blue, C.green, C.orange]
+      [D.pos.nome, D.grad.nome, D.id.nome, D.cert.nome],
+      [D.pos.previsto, D.grad.previsto, D.id.previsto, D.cert.previsto],
+      [C.blue, C.green, C.orange, C.purple]
     );
 
     if (!chartsBuilt['c-geral-stacked']) {
       chartsBuilt['c-geral-stacked'] = new Chart(document.getElementById('c-geral-stacked'), {
         type: 'bar',
         data: {
-          labels: ['Consolidado 2026'],
+          labels: [`Consolidado ${D.ano}`],
           datasets: [
             { label:'Comprometido (ativo)', data:[totalAtivo],  backgroundColor: C.green,  borderRadius:4, borderSkipped:false },
             { label:'Reservado (solicitado)',data:[totalSolicit],backgroundColor: C.orange, borderRadius:0, borderSkipped:false },
@@ -498,54 +540,24 @@ function buildCharts(n) {
     }
   }
 
-  // PÁGINA 1 — POS
-  if (n === 1) {
-    doughnut('c-pos-programas',
-      ['Doutorado', 'Mestrado', 'MBA', 'Especialização'],
-      [8, 31, 8, 1],
-      [C.blue, C.purple, C.teal, C.orange, C.green]
-    );
-    bar('c-pos-anos',
-      ['2014','2015','2016','2017','2018','2019','2021','2022','2024','2025', '2026'],
-      [{ data:[1, 6, 7, 5, 5, 4, 8, 5, 10, 15, 16], backgroundColor:C.blue, borderRadius:4, borderWidth:0 }],
-      { plugins:{ legend:{ display:false } },
-        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
-    );
-  }
-
-  // PÁGINA 2 — GRAD
-  if (n === 2) {
-    doughnut('c-grad-cursos',
-      ['Direito','Contabilidade','Ciências Contábeis','Administração','Psicologia'],
-      [47, 2, 2, 1, 1],
-      [C.blue, C.green, C.orange]
-    );
-    bar('c-grad-anos',
-      ['2016','2017','2018','2019','2021','2022','2023','2024','2025', '2026'],
-      [{ data:[18, 5, 4, 1, 3, 3, 5, 3, 2, 8], backgroundColor:C.green, borderRadius:4, borderWidth:0 }],
-      { plugins:{ legend:{ display:false } },
-        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
-    );
-  }
-
-  // PÁGINA 3 — IDIOMAS
-  if (n === 3) {
-    doughnut('c-idiomas',
-      ['Inglês','Francês','Espanhol','Italiano','Alemão'],
-      [263, 38, 30, 4, 3],
-      [C.blue, C.orange, C.teal, C.purple, C.green]
-    );
-    bar('c-idi-anos',
-      ['2015','2016','2017','2018','2019','2021','2022','2023','2024','2025', '2026'],
-      [{ data:[49, 39, 47, 10, 15, 11, 11, 24, 28, 54, 49], backgroundColor:C.orange, borderRadius:4, borderWidth:0 }],
-      { plugins:{ legend:{ display:false } },
-        scales:{ y:{ ticks:{ callback: v => v, font:{ size:11 } }, grid:{ color:'#f3f2f1' } } } }
-    );
-  }
 }
 
 // ── inicializa ─────────────────────────────────────────────
-buildCharts(0);
+  // ── inicializa após carregar o arquivo que o Power Automate atualiza ──
+  fetch(`./painel-data.json?ts=${Date.now()}`, { cache: 'no-store' })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      renderData(data);
+      buildCharts(0);
+    })
+    .catch(error => {
+      console.error('Não foi possível carregar painel-data.json:', error);
+      setText('data-badge', 'Erro ao carregar dados');
+      setText('overview-section-label', 'Não foi possível carregar os dados da planilha');
+    });
 </script>
 </body>
 </html>
