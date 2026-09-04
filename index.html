@@ -91,18 +91,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
   <button class="nav-btn active" onclick="setPage(0,this)" title="Visão Geral">
     <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zm0 10h8v8H3zm10-10h8v8h-8zm0 10h8v8h-8z"/></svg>
   </button>
-  <!-- POS -->
-  <button class="nav-btn" onclick="setPage(1,this)" title="Pós-Graduação">
-    <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
-  </button>
-  <!-- GRAD -->
-  <button class="nav-btn" onclick="setPage(2,this)" title="Graduação">
-    <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 11-6-11-6z"/></svg>
-  </button>
-  <!-- Idiomas -->
-  <button class="nav-btn" onclick="setPage(3,this)" title="Idiomas">
-    <svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg>
-  </button>
 </div>
 
 <!-- MAIN -->
@@ -114,9 +102,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
 
   <div class="tabbar">
     <div class="tab active" onclick="setPage(0,null)">Visão Geral</div>
-    <div class="tab" onclick="setPage(1,null)">Pós-Graduação</div>
-    <div class="tab" onclick="setPage(2,null)">Graduação</div>
-    <div class="tab" onclick="setPage(3,null)">Idiomas</div>
   </div>
 
   <!-- ═══════════════════════════════════════
@@ -142,9 +127,9 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
         <div class="kpi-value" id="kpi-reservado"></div>
         <div class="kpi-sub">Valores solicitados no arquivo JSON</div>
       </div>
-      <div class="kpi teal">
+      <div class="kpi teal" style="grid-column: span 2; border-top-width: 6px;">
         <div class="kpi-label">Valor Disponível</div>
-        <div class="kpi-value" id="kpi-disponivel"></div>
+        <div class="kpi-value" id="kpi-disponivel" style="font-size: 32px; font-weight: 800;"></div>
         <div class="kpi-sub">Previsto − Comprometido − Reservado</div>
       </div>
     </div>
@@ -167,140 +152,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
         <div class="chart-title">Composição do orçamento consolidado</div>
         <div class="chart-sub">Comprometido × Reservado para novas bolsas × Disponível</div>
         <div class="chart-wrap" style="height:160px"><canvas id="c-geral-stacked"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════════════════════════════════
-       PÁGINA 1 — PÓS-GRADUAÇÃO
-  ═══════════════════════════════════════ -->
-  <div class="canvas" id="page-1">
-
-  <div class="section-label" id="pos-section-label"></div>
-
-    <div class="kpi-grid kpi-grid-4">
-      <div class="kpi">
-        <div class="kpi-label">Total Previsto</div>
-        <div class="kpi-value" id="pos-previsto"></div>
-        <div class="kpi-sub" id="pos-diferenca"></div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-label">Valor Comprometido</div>
-        <div class="kpi-value" id="pos-ativo"></div>
-        <div class="kpi-sub pos" id="pos-comprometido-pct"></div>
-      </div>
-      <div class="kpi orange">
-        <div class="kpi-label">Valor Solicitado</div>
-        <div class="kpi-value" id="pos-solicitado"></div>
-        <div class="kpi-sub" id="pos-livre"></div>
-      </div>
-      <div class="kpi purple">
-        <div class="kpi-label">Já Pago</div>
-        <div class="kpi-value" id="pos-pago"></div>
-        <div class="kpi-sub" id="pos-pago-pct"></div>
-      </div>
-    </div>
-
-    <div class="chart-row chart-row-21">
-      <div class="chart-box">
-        <div class="chart-title">Composição financeira</div>
-        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="c-pos-financeiro"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">Resumo dos valores</div>
-        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
-        <table class="data-table"><tbody id="pos-financeiro-tabela"></tbody></table>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ═══════════════════════════════════════
-       PÁGINA 2 — GRADUAÇÃO
-  ═══════════════════════════════════════ -->
-  <div class="canvas" id="page-2">
-
-    <div class="section-label" id="grad-section-label"></div>
-
-    <div class="kpi-grid kpi-grid-4">
-      <div class="kpi">
-        <div class="kpi-label">Total Previsto</div>
-        <div class="kpi-value" id="grad-previsto"></div>
-        <div class="kpi-sub" id="grad-diferenca"></div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-label">Valor Comprometido</div>
-        <div class="kpi-value" id="grad-ativo"></div>
-        <div class="kpi-sub pos" id="grad-comprometido-pct"></div>
-      </div>
-      <div class="kpi orange">
-        <div class="kpi-label">Valor Solicitado</div>
-        <div class="kpi-value" id="grad-solicitado"></div>
-        <div class="kpi-sub" id="grad-livre"></div>
-      </div>
-      <div class="kpi purple">
-        <div class="kpi-label">Já Pago</div>
-        <div class="kpi-value" id="grad-pago"></div>
-        <div class="kpi-sub" id="grad-pago-pct"></div>
-      </div>
-    </div>
-
-    <div class="chart-row chart-row-21">
-      <div class="chart-box">
-        <div class="chart-title">Composição financeira</div>
-        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="c-grad-financeiro"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">Resumo dos valores</div>
-        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
-        <table class="data-table"><tbody id="grad-financeiro-tabela"></tbody></table>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ═══════════════════════════════════════
-       PÁGINA 3 — IDIOMAS
-  ═══════════════════════════════════════ -->
-  <div class="canvas" id="page-3">
-
-    <div class="section-label" id="idi-section-label"></div>
-
-    <div class="kpi-grid kpi-grid-4">
-      <div class="kpi">
-        <div class="kpi-label">Reserva Orçamentária Total</div>
-        <div class="kpi-value" id="idi-reserva"></div>
-        <div class="kpi-sub" id="idi-processos"></div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-label">Já Reembolsado</div>
-        <div class="kpi-value" id="idi-pago"></div>
-        <div class="kpi-sub pos" id="idi-pago-pct"></div>
-      </div>
-      <div class="kpi teal">
-        <div class="kpi-label">Valor Comprometido</div>
-        <div class="kpi-value" id="idi-ativo"></div>
-        <div class="kpi-sub" id="idi-ativo-pct"></div>
-      </div>
-      <div class="kpi orange">
-        <div class="kpi-label">Orçamento Livre</div>
-        <div class="kpi-value" id="idi-livre"></div>
-        <div class="kpi-sub">Valor disponível na modalidade</div>
-      </div>
-    </div>
-
-    <div class="chart-row chart-row-21">
-      <div class="chart-box">
-        <div class="chart-title">Composição financeira</div>
-        <div class="chart-sub">Distribuição do orçamento da modalidade</div>
-        <div class="chart-wrap" style="height:220px"><canvas id="c-idi-financeiro"></canvas></div>
-      </div>
-      <div class="chart-box">
-        <div class="chart-title">Resumo dos valores</div>
-        <div class="chart-sub">Dados recebidos do arquivo JSON</div>
-        <table class="data-table"><tbody id="idi-financeiro-tabela"></tbody></table>
       </div>
     </div>
   </div>
@@ -503,7 +354,7 @@ function buildCharts(n) {
         { label:'Previsto', data:[D.pos.previsto, D.grad.previsto, D.id.previsto, D.cert.previsto],
           backgroundColor:[C.blueL, C.blueL, C.blueL, C.blueL],
           borderColor:[C.blue, C.blue, C.blue, C.blue], borderWidth:2, borderRadius:4 },
-        { label:'Pago', data:[D.pos.pago, D.grad.pago, D.id.pago, D.cert.pago],
+        { label:'Pago', data:[D.pos.pago || 0, D.grad.pago || 0, D.id.pago || 0, D.cert.pago || 0],
           backgroundColor:[C.blue, C.green, C.orange, C.purple],
           borderWidth:0, borderRadius:4 }
       ],
