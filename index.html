@@ -118,7 +118,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
         <div class="kpi-sub" id="kpi-total-prev-sub"></div>
       </div>
       <div class="kpi green">
-        <div class="kpi-label">Já Comprometido (bolsas ativas)</div>
+        <div class="kpi-label">Já Pago (bolsas ativas)</div>
         <div class="kpi-value" id="kpi-comprometido"></div>
         <div class="kpi-sub pos" id="kpi-comprometido-pct"></div>
       </div>
@@ -130,7 +130,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       <div class="kpi teal" style="grid-column: span 2; border-top-width: 6px;">
         <div class="kpi-label">Valor Disponível</div>
         <div class="kpi-value" id="kpi-disponivel" style="font-size: 32px; font-weight: 800;"></div>
-        <div class="kpi-sub">Previsto − Comprometido − Reservado</div>
+        <div class="kpi-sub">Previsto − Pago − Reservado</div>
       </div>
     </div>
 
@@ -179,7 +179,7 @@ const fmt = v => Number(v || 0).toLocaleString('pt-BR',{style:'currency',currenc
 // ── dados carregados do JSON gerado a partir da planilha ────
 let D;
 let totalPrev;
-let totalAtivo;
+let totalPago;
 let totalSolicit;
 let totalDisponivel;
 
@@ -189,15 +189,21 @@ const pct = (value, total) => total ? `${((value / total) * 100).toFixed(1)}%` :
 function normalizeData(data) {
   const rows = Array.isArray(data.bolsas?.body) ? data.bolsas.body : [];
   const byName = name => rows.find(row => row.nome.toLowerCase() === name.toLowerCase()) || {};
-  const makeItem = (row, nome) => ({
-    nome,
-    previsto: Number(row.previsto || 0),
-    pago: Number(row.pago || 0),
-    solicitado: Number(row.solicitado || 0),
-    diferenca: Number(row.diferenca || 0),
-    orcamento_livre: Number(row.orcamento_livre || 0),
-    ativo: Number(row.previsto || 0) - Number(row.diferenca || 0)
-  });
+  const makeItem = (row, nome) => {
+    const previsto = Number(row.previsto || 0);
+    const diferenca = Number(row.diferenca || 0);
+    const pago = previsto - diferenca;
+
+    return {
+      nome,
+      previsto,
+      pago,
+      solicitado: Number(row.solicitado || 0),
+      diferenca,
+      orcamento_livre: Number(row.orcamento_livre || 0),
+      ativo: pago
+    };
+  };
 
   const pos = makeItem(byName('Bolsa de Pós-Graduação'), 'Pós-Graduação');
   const grad = makeItem(byName('Bolsa de Graduação'), 'Graduação');
@@ -219,17 +225,17 @@ function normalizeData(data) {
 function renderData(data) {
   D = normalizeData(data);
   totalPrev = D.pos.previsto + D.grad.previsto + D.id.previsto + D.cert.previsto;
-  totalAtivo = D.pos.ativo + D.grad.ativo + D.id.ativo + D.cert.ativo;
+  totalPago = D.pos.pago + D.grad.pago + D.id.pago + D.cert.pago;
   totalSolicit = D.pos.solicitado + D.grad.solicitado + D.id.solicitado + D.cert.solicitado;
-  totalDisponivel = totalPrev - totalAtivo - totalSolicit;
+  totalDisponivel = totalPrev - totalPago - totalSolicit;
 
   setText('data-badge', `Dados ${D.ano}`);
   setText('overview-section-label', `Consolidado ${D.ano} — todas as modalidades`);
   setText('overview-bar-sub', `Comparativo do valor previsto e valor efetivamente pago em ${D.ano}`);
   setText('kpi-total-prev', fmt(totalPrev));
   setText('kpi-total-prev-sub', D.resumo.modalidades);
-  setText('kpi-comprometido', fmt(totalAtivo));
-  setText('kpi-comprometido-pct', `${pct(totalAtivo, totalPrev)} do total previsto`);
+  setText('kpi-comprometido', fmt(totalPago));
+  setText('kpi-comprometido-pct', `${pct(totalPago, totalPrev)} do total previsto`);
   setText('kpi-reservado', fmt(totalSolicit));
   setText('kpi-disponivel', fmt(totalDisponivel));
 }
@@ -359,7 +365,7 @@ function buildCharts(n) {
         data: {
           labels: [`Consolidado ${D.ano}`],
           datasets: [
-            { label:'Comprometido (ativo)', data:[totalAtivo],  backgroundColor: C.green,  borderRadius:4, borderSkipped:false },
+            { label:'Pago', data:[totalPago],  backgroundColor: C.green,  borderRadius:4, borderSkipped:false },
             { label:'Reservado (solicitado)',data:[totalSolicit],backgroundColor: C.orange, borderRadius:0, borderSkipped:false },
             { label:'Disponível',           data:[totalDisponivel < 0 ? 0 : totalDisponivel], backgroundColor: C.teal, borderRadius:4, borderSkipped:false },
           ]
