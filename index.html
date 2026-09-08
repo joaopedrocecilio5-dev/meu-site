@@ -60,6 +60,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
 .chart-title{font-size:12px;font-weight:600;color:#252423;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px}
 .chart-sub{font-size:11px;color:#605e5c;margin-bottom:12px}
 .chart-wrap{position:relative;width:100%}
+.overview-composition .chart-sub{margin-bottom:4px}
 
 /* section title */
 .section-label{font-size:11px;font-weight:600;color:#605e5c;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #e1dfdd}
@@ -120,7 +121,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       <div class="chart-box overview-composition">
         <div class="chart-title">Composição do orçamento consolidado</div>
         <div class="chart-sub">Pago × Reservado × Disponível</div>
-        <div class="chart-wrap" style="height:58px"><canvas id="c-geral-stacked"></canvas></div>
+        <div class="chart-wrap" style="height:90px"><canvas id="c-geral-stacked"></canvas></div>
       </div>
     </div>
 
@@ -354,10 +355,10 @@ function buildCharts(n) {
         options: {
           indexAxis: 'y',
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display:true, position:'bottom', labels:{ font:{size:11}, boxWidth:10, padding:8 } } },
+          plugins: { legend: { display:true, position:'bottom', labels:{ font:{size:9}, boxWidth:8, padding:3 } } },
           scales: {
-            x: { stacked:true, grid:{ color:'#f3f2f1' }, ticks:{ callback: v=>'R$'+Math.round(v/1000)+'k', font:{size:11} } },
-            y: { stacked:true, grid:{ display:false } }
+            x: { stacked:true, grid:{ color:'#f3f2f1' }, ticks:{ callback: v=>'R$'+Math.round(v/1000)+'k', font:{size:9} } },
+            y: { stacked:true, grid:{ display:false }, ticks:{ display:false } }
           }
         }
       });
