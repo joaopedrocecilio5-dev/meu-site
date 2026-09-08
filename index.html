@@ -103,7 +103,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
         <div class="kpi-sub" id="kpi-total-prev-sub"></div>
       </div>
       <div class="kpi green">
-        <div class="kpi-label">Já Pago (bolsas ativas)</div>
+        <div class="kpi-label">Já Pago/ a Pagar</div>
         <div class="kpi-value" id="kpi-comprometido"></div>
         <div class="kpi-sub pos" id="kpi-comprometido-pct"></div>
       </div>
@@ -116,6 +116,11 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
         <div class="kpi-label">Valor Disponível</div>
         <div class="kpi-value" id="kpi-disponivel" style="font-size: 32px; font-weight: 800;"></div>
         <div class="kpi-sub">Previsto − Pago − Reservado</div>
+      </div>
+      <div class="chart-box overview-composition">
+        <div class="chart-title">Composição do orçamento consolidado</div>
+        <div class="chart-sub">Pago × Reservado × Disponível</div>
+        <div class="chart-wrap" style="height:58px"><canvas id="c-geral-stacked"></canvas></div>
       </div>
     </div>
 
@@ -132,13 +137,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f3f2f1;color:#252423}
       </div>
     </div>
 
-    <div class="chart-row chart-row-1">
-      <div class="chart-box">
-        <div class="chart-title">Composição do orçamento consolidado</div>
-        <div class="chart-sub">Comprometido × Reservado para novas bolsas × Disponível</div>
-        <div class="chart-wrap" style="height:160px"><canvas id="c-geral-stacked"></canvas></div>
-      </div>
-    </div>
   </div>
 
 </div><!-- /main -->
